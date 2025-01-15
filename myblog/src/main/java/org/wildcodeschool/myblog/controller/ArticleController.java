@@ -6,10 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.myblog.dto.ArticleDTO;
 import org.wildcodeschool.myblog.model.Article;
 import org.wildcodeschool.myblog.model.Category;
+import org.wildcodeschool.myblog.model.Image;
 import org.wildcodeschool.myblog.repository.ArticleRepository;
 import org.wildcodeschool.myblog.repository.CategoryRepository;
+import org.wildcodeschool.myblog.repository.ImageRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,10 +21,12 @@ import java.util.stream.Collectors;
 public class ArticleController {
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
 
-    public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository) {
+    public ArticleController(ArticleRepository articleRepository, CategoryRepository categoryRepository, ImageRepository imageRepository) {
         this.articleRepository = articleRepository;
         this.categoryRepository = categoryRepository;
+        this.imageRepository = imageRepository;
     }
 
     //DTO for Article
@@ -33,6 +38,9 @@ public class ArticleController {
         articleDto.setUpdateAt(article.getUpdatedAt());
         if(article.getCategory() != null) {
             articleDto.setCategoryName(article.getCategory().getName());
+        }
+        if(article.getImages() != null) {
+            articleDto.setImageUrls(article.getImages().stream().map(Image::getUrl).collect(Collectors.toList()));
         }
         return articleDto;
     }
@@ -106,6 +114,29 @@ public class ArticleController {
             }
             article.setCategory(category);
         }
+
+        //add image
+        if(article.getImages() != null && !article.getImages().isEmpty()) {
+            List<Image> validImages = new ArrayList<>();
+            for(Image image : article.getImages()) {
+                if (image.getId() != null) {
+
+                    //Checking existing images
+                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
+                    if(existingImage != null) {
+                        validImages.add(existingImage);
+                    }  else {
+                        return ResponseEntity.badRequest().body(null);
+                    }
+                } else {
+
+                    //Create new images
+                    Image savedImage = imageRepository.save(image);
+                    validImages.add(savedImage);
+                }
+            }
+            article.setImages(validImages);
+        }
         Article savedArticle = articleRepository.save(article);
         return ResponseEntity.status(HttpStatus.CREATED).body(convertToDTO(savedArticle));
     }
@@ -121,12 +152,42 @@ public class ArticleController {
         article.setContent(articleDetails.getContent());
         article.setUpdatedAt(LocalDateTime.now());
 
+        //update category
         if(articleDetails.getCategory() != null) {
             Category category = categoryRepository.findById(articleDetails.getCategory().getId()).orElse(null);
             if(category == null) {
                 return ResponseEntity.badRequest().body(null);
             }
             article.setCategory(category);
+        }
+
+        //update image
+        if(articleDetails.getImages() != null) {
+            List<Image> validImages = new ArrayList<>();
+            for(Image image : articleDetails.getImages()) {
+                if (image.getId() != null) {
+
+                    //Checking existing images
+                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
+                    if(existingImage != null) {
+                        validImages.add(existingImage);
+                    } else {
+                        return ResponseEntity.badRequest().build();
+                    }
+                } else {
+
+                    //Create new images
+                    Image savedImage = imageRepository.save(image);
+                    validImages.add(savedImage);
+                }
+            }
+
+            //Update the list of associated images
+            article.setImages(validImages);
+        } else {
+
+            //If no images are supplied, the list of associated images is cleared
+            article.getImages().clear();
         }
 
         Article updatedArticle = articleRepository.save(article);
