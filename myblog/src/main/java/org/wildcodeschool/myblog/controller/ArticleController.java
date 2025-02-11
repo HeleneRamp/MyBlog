@@ -47,7 +47,7 @@ public class ArticleController {
         }
         //Authors
         if(article.getArticleAuthors() != null) {
-            articleDto.setAuthors(article.getArticleAuthors().stream()
+            articleDto.setAuthorDTOs(article.getArticleAuthors().stream()
                     .filter(articleAuthor -> articleAuthor.getAuthor() != null)
                     .map(articleAuthor -> {
                         AuthorDTO authorDto = new AuthorDTO();
@@ -154,7 +154,7 @@ public class ArticleController {
         }
         Article savedArticle = articleRepository.save(article);
 
-        //add authors
+        //add authors in join table
         if(article.getArticleAuthors() != null) {
             for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
                 Author author = articleAuthor.getAuthor();

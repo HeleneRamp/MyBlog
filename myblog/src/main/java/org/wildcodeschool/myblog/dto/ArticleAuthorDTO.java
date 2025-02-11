@@ -2,8 +2,9 @@ package org.wildcodeschool.myblog.dto;
 
 public class ArticleAuthorDTO {
     private Long id;
-    private String articleName;
-    private String authorName;
+    private Long articleId;
+    private Long authorId;
+    private String contribution;
 
     //Getters & Setters
 
@@ -16,19 +17,27 @@ public class ArticleAuthorDTO {
         this.id = id;
     }
 
-    public String getArticleName() {
-        return articleName;
+    public Long getArticleId() {
+        return articleId;
     }
 
-    public void setArticleName(String articleName) {
-        this.articleName = articleName;
+    public void setArticleId(Long articleId) {
+        this.articleId = articleId;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getContribution() {
+        return contribution;
+    }
+
+    public void setContribution(String contribution) {
+        this.contribution = contribution;
     }
 }

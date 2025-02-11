@@ -2,6 +2,7 @@ package org.wildcodeschool.myblog.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.wildcodeschool.myblog.dto.ArticleAuthorDTO;
 import org.wildcodeschool.myblog.dto.AuthorDTO;
 import org.wildcodeschool.myblog.model.ArticleAuthor;
 import org.wildcodeschool.myblog.model.Author;
@@ -25,15 +26,12 @@ public class AuthorController {
         authorDTO.setId(author.getId());
         authorDTO.setFirstname(author.getFirstname());
         authorDTO.setLastname(author.getLastname());
-        if(author.getArticleAuthors() != null) {
-            authorDTO.setArticleAuthorIds(author.getArticleAuthors().stream().map(ArticleAuthor::getId).collect(Collectors.toList()));
-        }
         return authorDTO;
     }
 
     //CRUD
     @GetMapping
-    public ResponseEntity<List<AuthorDTO>> getAuthors() {
+    public ResponseEntity<List<AuthorDTO>> getAllAuthors() {
         List<Author> authors = authorRepository.findAll();
         if(authors.isEmpty()) {
             return ResponseEntity.noContent().build();

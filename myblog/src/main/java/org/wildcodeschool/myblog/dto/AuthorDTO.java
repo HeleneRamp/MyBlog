@@ -6,7 +6,7 @@ public class AuthorDTO {
     private Long id;
     private String firstname;
     private String lastname;
-    private List<Long> articleAuthorIds;
+
 
     //Getters & Setters
 
@@ -32,10 +32,4 @@ public class AuthorDTO {
         this.lastname = lastname;
     }
 
-    public List<Long> getArticleAuthorIds() {
-        return articleAuthorIds;
-    }
-    public void setArticleAuthorIds(List<Long> articleAuthorIds) {
-        this.articleAuthorIds = articleAuthorIds;
-    }
 }
