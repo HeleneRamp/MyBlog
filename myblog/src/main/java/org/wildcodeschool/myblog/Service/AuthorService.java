@@ -2,6 +2,8 @@ package org.wildcodeschool.myblog.Service;
 
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.myblog.dto.AuthorDTO;
+import org.wildcodeschool.myblog.exception.AuthorNotFoundException;
+import org.wildcodeschool.myblog.exception.ExceededMaxLengthException;
 import org.wildcodeschool.myblog.mapper.AuthorMapper;
 import org.wildcodeschool.myblog.model.Author;
 import org.wildcodeschool.myblog.repository.AuthorRepository;
@@ -28,39 +30,44 @@ public class AuthorService {
 
     //DTO for get author by id
     public AuthorDTO getAuthorById(Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        Author author = authorRepository.findById(id)
+                .orElseThrow(()-> new AuthorNotFoundException("L'auteur avec l'id " + id + " n'existe pas :("));
         return authorMapper.convertToDTO(author);
     }
 
     //DTO for create an author
     public AuthorDTO createAuthor(Author author) {
         Author savedAuthor = authorRepository.save(author);
+        if(author.getFirstname().length() > 50) {
+            throw new ExceededMaxLengthException("Le prénom ne peux pas dépasser 50 caractères");
+        } else if (author.getLastname().length() > 50) {
+            throw new ExceededMaxLengthException("Le nom ne peux pas dépasser 50 caractères");
+        }
         return authorMapper.convertToDTO(savedAuthor);
     }
 
     //DTO for update an author
     public AuthorDTO updateAuthor(Long id, Author authorDetails) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        Author author = authorRepository.findById(id)
+                .orElseThrow(()-> new AuthorNotFoundException("L'auteur avec l'id " + id + " n'existe pas :("));
         author.setFirstname(authorDetails.getFirstname());
         author.setLastname(authorDetails.getLastname());
+
+        if(author.getFirstname().length() > 50) {
+            throw new ExceededMaxLengthException("Le prénom ne peux pas dépasser 50 caractères");
+        } else if (author.getLastname().length() > 50) {
+            throw new ExceededMaxLengthException("Le nom ne peux pas dépasser 50 caractères");
+        }
+
         Author updatedAuthor = authorRepository.save(author);
         return authorMapper.convertToDTO(updatedAuthor);
     }
 
     //DTO for delete an author
     public boolean deleteAuthor(Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return false;
-        } else {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(()-> new AuthorNotFoundException("L'auteur avec l'id " + id + " n'existe pas :("));
             authorRepository.delete(author);
             return true;
-        }
     }
 }
