@@ -1,7 +1,11 @@
 package org.wildcodeschool.myblog.Service;
 
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.wildcodeschool.myblog.dto.ArticleCreateDTO;
 import org.wildcodeschool.myblog.dto.ArticleDTO;
+import org.wildcodeschool.myblog.dto.AuthorContributionDTO;
+import org.wildcodeschool.myblog.dto.ImageDTO;
 import org.wildcodeschool.myblog.exception.*;
 import org.wildcodeschool.myblog.mapper.ArticleMapper;
 import org.wildcodeschool.myblog.model.*;
@@ -45,55 +49,48 @@ public class ArticleService {
     }
 
     //DTO for create an article
-    public ArticleDTO createArticle(Article article) {
+    public ArticleDTO createArticle(@Valid ArticleCreateDTO articleCreateDTO) {
+        Article article = articleMapper.convertToEntity(articleCreateDTO);
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
 
-        if(article.getTitle().length() > 50) {
-            throw new ExceededMaxLengthException("Le titre ne peux pas dépasser 50 caractères");
-        }
-
         //add category
-        if (article.getCategory() != null) {
             Category category = categoryRepository.findById(article.getCategory().getId())
                     .orElseThrow(()-> new CategoryNotFoundException("La catégorie avec l'id " + article.getCategory().getId() +" n'existe pas :("));
             article.setCategory(category);
-        }
 
         //add images
-        if (article.getImages() != null && !article.getImages().isEmpty()) {
             List<Image> validImages = new ArrayList<>();
-            for (Image image : article.getImages()) {
+            for (ImageDTO image : articleCreateDTO.getImages()) {
                 if (image.getId() != null) {
                     Image existingImage = imageRepository.findById(image.getId())
                             .orElseThrow(()-> new ImageNotFoundException("L'image avec l'id " + image.getId() + " n'existe pas :("));
-                    if (existingImage != null) {
                         validImages.add(existingImage);
-                    }
                 } else {
-                    Image savedImage = imageRepository.save(image);
-                    validImages.add(savedImage);
+                    Image newImage = new Image();
+                    newImage.setUrl(image.getUrl());
+                    validImages.add(imageRepository.save(newImage));
                 }
             }
             article.setImages(validImages);
-        }
 
         Article savedArticle = articleRepository.save(article);
 
         //add authors
-        if (article.getArticleAuthors() != null) {
-            for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
+            List<ArticleAuthor> articleAuthors = new ArrayList<>();
+            for (AuthorContributionDTO authorDTO : articleCreateDTO.getAuthors()) {
 
-                Author author = authorRepository.findById(articleAuthor.getAuthor().getId())
-                        .orElseThrow(()-> new AuthorNotFoundException("L'auteur avec l'id " + articleAuthor.getAuthor().getId() + " n'existe pas :("));
+                Author author = authorRepository.findById(authorDTO.getAuthorId())
+                        .orElseThrow(()-> new AuthorNotFoundException("L'auteur avec l'id " + authorDTO.getAuthorId() + " n'existe pas :("));
 
+                ArticleAuthor articleAuthor = new ArticleAuthor();
                 articleAuthor.setAuthor(author);
                 articleAuthor.setArticle(savedArticle);
-                articleAuthor.setContribution(articleAuthor.getContribution());
+                articleAuthor.setContribution(authorDTO.getContribution());
 
                 articleAuthorRepository.save(articleAuthor);
             }
-        }
+            article.setArticleAuthors(articleAuthors);
 
         return articleMapper.convertToDTO(savedArticle);
     }
