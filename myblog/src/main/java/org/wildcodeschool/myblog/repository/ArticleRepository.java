@@ -1,7 +1,6 @@
 package org.wildcodeschool.myblog.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.wildcodeschool.myblog.model.Article;
 
 import java.time.LocalDateTime;
