@@ -10,6 +10,7 @@ import org.wildcodeschool.myblog.exception.*;
 import org.wildcodeschool.myblog.mapper.ArticleMapper;
 import org.wildcodeschool.myblog.model.*;
 import org.wildcodeschool.myblog.repository.*;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,14 +26,16 @@ public class ArticleService {
     private final ImageRepository imageRepository;
     private final AuthorRepository authorRepository;
     private final ArticleAuthorRepository articleAuthorRepository;
+    private final UserRepository userRepository;
 
-    public ArticleService(ArticleRepository articleRepository, ArticleMapper articleMapper, CategoryRepository categoryRepository, ImageRepository imageRepository, AuthorRepository authorRepository, ArticleAuthorRepository articleAuthorRepository) {
+    public ArticleService(ArticleRepository articleRepository, ArticleMapper articleMapper, CategoryRepository categoryRepository, ImageRepository imageRepository, AuthorRepository authorRepository, ArticleAuthorRepository articleAuthorRepository, UserRepository userRepository) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
         this.authorRepository = authorRepository;
         this.articleAuthorRepository = articleAuthorRepository;
+        this.userRepository = userRepository;
     }
 
     //DTO for get all articles
@@ -96,9 +99,19 @@ public class ArticleService {
     }
 
     //DTO for update an article
-    public ArticleDTO updateArticle(Long id, Article articleDetails) {
+    public ArticleDTO updateArticle(Long id, Article articleDetails, String userEmail){
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("L'article avec l'id " + id + " n'a pas été trouvé :("));
+
+        User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new ResourceNotFoundException("user not found"));
+
+        boolean isAdmin = user.getRoles().contains("ROLE_ADMIN");
+        boolean isAuthor = user.getRoles().contains("ROLE_AUTHOR");
+
+        if (!isAdmin && !isAuthor) {
+            throw new AccessDeniedException("");
+        }
+
         article.setTitle(articleDetails.getTitle());
         article.setContent(articleDetails.getContent());
         article.setUpdatedAt(LocalDateTime.now());
@@ -160,11 +173,19 @@ public class ArticleService {
     }
 
     //DTO for delete article/author
-    public boolean deleteArticle(Long id) {
+    public void deleteArticle(Long id, String userEmail) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("L'article avec l'id " + id + " n'existe pas :("));
+
+        User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new ResourceNotFoundException("user not found"));
+
+        boolean isAdmin = user.getRoles().contains("ROLE_ADMIN");
+        boolean isAuthor = user.getRoles().contains("ROLE_AUTHOR");
+
+        if (!isAdmin && !isAuthor) {
+            throw new AccessDeniedException("");
+        }
         articleAuthorRepository.deleteAll(article.getArticleAuthors());
         articleRepository.delete(article);
-        return true;
     }
 }
