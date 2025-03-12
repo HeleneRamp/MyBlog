@@ -25,6 +25,12 @@ public class ArticleCreateDTO {
     @NotEmpty(message = "La liste des auteurs ne dois pas être vide")
     private List<@Valid AuthorContributionDTO> authors;
 
+    private String paragrOne;
+
+    private String paragrTwo;
+
+    private String paragrThree;
+
     //Getters & Setters
 
 
@@ -66,5 +72,29 @@ public class ArticleCreateDTO {
 
     public void setAuthors(List<AuthorContributionDTO> authors) {
         this.authors = authors;
+    }
+
+    public String getParagrOne() {
+        return paragrOne;
+    }
+
+    public void setParagrOne(String paragrOne) {
+        this.paragrOne = paragrOne;
+    }
+
+    public String getParagrTwo() {
+        return paragrTwo;
+    }
+
+    public void setParagrTwo(String paragrTwo) {
+        this.paragrTwo = paragrTwo;
+    }
+
+    public String getParagrThree() {
+        return paragrThree;
+    }
+
+    public void setParagrThree(String paragrThree) {
+        this.paragrThree = paragrThree;
     }
 }

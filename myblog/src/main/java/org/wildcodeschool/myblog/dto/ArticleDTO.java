@@ -13,7 +13,12 @@ public class ArticleDTO {
     private LocalDateTime updateAt;
     private String categoryName;
     private List<String> imageUrls;
-    private  List<AuthorDTO> authorDTOs;
+    private List<AuthorDTO> authorDTOs;
+    private String paragrOne;
+    private String paragrTwo;
+    private String paragrThree;
+    private int likeCount;
+    private boolean isFavorite;
 
 //Getters & Setters
     public Long getId() {
@@ -69,6 +74,46 @@ public class ArticleDTO {
 
     public void setAuthorDTOs(List<AuthorDTO> authorDTOs) {
         this.authorDTOs = authorDTOs;
+    }
+
+    public String getParagrOne() {
+        return paragrOne;
+    }
+
+    public void setParagrOne(String paragrOne) {
+        this.paragrOne = paragrOne;
+    }
+
+    public String getParagrTwo() {
+        return paragrTwo;
+    }
+
+    public void setParagrTwo(String paragrTwo) {
+        this.paragrTwo = paragrTwo;
+    }
+
+    public String getParagrThree() {
+        return paragrThree;
+    }
+
+    public void setParagrThree(String paragrThree) {
+        this.paragrThree = paragrThree;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }
 

@@ -18,6 +18,20 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(columnDefinition = "TEXT")
+    private String paragrOne;
+
+    @Column(columnDefinition =  "TEXT")
+    private String paragrTwo;
+
+    @Column(columnDefinition = "TEXT")
+    private String paragrThree;
+
+    private int likeCount;
+
+    private boolean isFavorite;
+
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -101,5 +115,45 @@ public class Article {
     }
     public void setArticleAuthors(List<ArticleAuthor> articleAuthors) {
         this.articleAuthors = articleAuthors;
+    }
+
+    public String getParagrOne() {
+        return paragrOne;
+    }
+
+    public void setParagrOne(String paragrOne) {
+        this.paragrOne = paragrOne;
+    }
+
+    public String getParagrTwo() {
+        return paragrTwo;
+    }
+
+    public void setParagrTwo(String paragrTwo) {
+        this.paragrTwo = paragrTwo;
+    }
+
+    public String getParagrThree() {
+        return paragrThree;
+    }
+
+    public void setParagrThree(String paragrThree) {
+        this.paragrThree = paragrThree;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

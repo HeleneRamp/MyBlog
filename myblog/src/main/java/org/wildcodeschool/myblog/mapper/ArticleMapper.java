@@ -16,6 +16,11 @@ public class ArticleMapper {
         articleDto.setTitle(article.getTitle());
         articleDto.setContent(article.getContent());
         articleDto.setUpdateAt(article.getUpdatedAt());
+        articleDto.setParagrOne(article.getParagrOne());
+        articleDto.setParagrTwo(article.getParagrTwo());
+        articleDto.setParagrThree(article.getParagrThree());
+        articleDto.setLikeCount(article.getLikeCount());
+        articleDto.setFavorite(article.isFavorite());
         //Category
         if(article.getCategory() != null) {
             articleDto.setCategoryName(article.getCategory().getName());
@@ -44,6 +49,9 @@ public class ArticleMapper {
         Article article = new Article();
         article.setTitle(articleCreateDTO.getTitle());
         article.setContent(articleCreateDTO.getContent());
+        article.setParagrOne(articleCreateDTO.getParagrOne());
+        article.setParagrTwo(articleCreateDTO.getParagrTwo());
+        article.setParagrThree(articleCreateDTO.getParagrThree());
 
         // Category
         if (articleCreateDTO.getCategoryId() != null) {
