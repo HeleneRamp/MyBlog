@@ -3,6 +3,8 @@ package org.wildcodeschool.myblog.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.myblog.Service.ArticleService;
@@ -42,15 +44,18 @@ public class ArticleController {
         return ResponseEntity.ok(article);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<ArticleDTO> createArticle(@Valid @RequestBody ArticleCreateDTO articleCreateDTO) {
      ArticleDTO savedArticle = articleService.createArticle(articleCreateDTO);
      return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('AUTHOR')")
     @PutMapping("/{id}")
-    public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails) {
-        ArticleDTO article = articleService.updateArticle(id, articleDetails);
+    public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails, Authentication authentication) {
+        String userEmail = authentication.getName();
+        ArticleDTO article = articleService.updateArticle(id, articleDetails, userEmail);
         if (article == null) {
             return ResponseEntity.notFound().build();
         }
@@ -58,11 +63,9 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
-       if (articleService.deleteArticle(id)) {
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long id, Authentication authentication) {
+        String userEmail = authentication.getName();
+       articleService.deleteArticle(id,  userEmail);
            return ResponseEntity.noContent().build();
-       } else {
-           return ResponseEntity.notFound().build();
-       }
     }
 }
