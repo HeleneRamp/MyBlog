@@ -10,7 +10,7 @@ public class ArticleDTO {
     private Long id;
     private String title;
     private String content;
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
     private String categoryName;
     private List<String> imageUrls;
     private List<AuthorDTO> authorDTOs;
@@ -45,12 +45,12 @@ public class ArticleDTO {
         this.content = content;
     }
 
-    public LocalDateTime getUpdateAt() {
-        return updateAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getCategoryName() {

@@ -21,7 +21,7 @@ public class CategoryMapper {
                 articleDTO.setId(article.getId());
                 articleDTO.setTitle(article.getTitle());
                 articleDTO.setContent(article.getContent());
-                articleDTO.setUpdateAt(article.getUpdatedAt());
+                articleDTO.setUpdatedAt(article.getUpdatedAt());
                 articleDTO.setCategoryName(article.getCategory().getName());
                 return articleDTO;
             }).collect(Collectors.toList()));
